@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sandbox-api
+  template:
+    metadata:
+      labels:
+        app: sandbox-api
+    spec:
+      containers:
+        - name: sandbox-api
+          image: sandbox-api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "production"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
